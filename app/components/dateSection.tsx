@@ -1,0 +1,80 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import AppointmentCard from './appointmentPageCard';
+import Colors from '../utils/Colors';
+
+interface Appointment {
+    id: string;
+    startTime: string;
+    endTime: string;
+    title: string;
+    description: string;
+}
+
+interface DateSectionProps {
+    date: string;
+    appointments: Appointment[];
+}
+
+const daysOfWeek = ['Su', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const dayOfWeek = daysOfWeek[date.getDay()];
+    const day = date.getDate();
+    return {
+        dayOfWeek,
+        day: day < 10 ? '0' + day : day.toString(),
+    };
+};
+
+const DateSection: React.FC<DateSectionProps> = ({ date, appointments }) => {
+    const { dayOfWeek, day } = formatDate(date);
+    return (
+        <View style={styles.section}>
+            <View style={styles.circle}>
+                <Text style={styles.dateText}>{dayOfWeek}</Text>
+                <Text style={styles.dateText}>{day}</Text>
+            </View>
+            <View style={styles.appointments}>
+                {appointments.map((appointment) => (
+                    <AppointmentCard
+                        key={appointment.id}
+                        startTime={appointment.startTime}
+                        endTime={appointment.endTime}
+                        title={appointment.title}
+                        description={appointment.description}
+                    />
+                ))}
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    section: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginVertical: 10,
+    },
+    circle: {
+        width: 55,
+        height: 55,
+        borderRadius: 30,
+        backgroundColor: Colors.surface,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 20,
+    },
+    dateText: {
+        color: Colors.primary,
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    appointments: {
+        flex: 1,
+    },
+});
+
+export default DateSection;
