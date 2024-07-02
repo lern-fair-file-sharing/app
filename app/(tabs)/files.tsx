@@ -223,6 +223,7 @@ const FilesPage = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: 30,
         backgroundColor: "#fff",
     },
     content: {
@@ -231,24 +232,21 @@ const styles = StyleSheet.create({
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: 20,
-        padding: 20,
+        gap: 24,
+        padding: 24,
     },
     fileViews: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-evenly",
-        gap: 20,
-    },
-    timeBasedFileActivities: {
-
+        gap: 24,
     },
     fileActivitySection: {
         marginBottom: 10,
         gap: 7
     },
     fileActivityTime: {
-        color: Colors.primary
+        color: Colors.lightGray
     },
     courseFolderSection: {
     },

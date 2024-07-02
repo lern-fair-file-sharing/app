@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.primary,
         padding: 10,
-        borderRadius: 3,
+        borderRadius: 8,
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "transparent",
         padding: 10,
-        borderRadius: 3,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: Colors.primary,
         display: "flex",
