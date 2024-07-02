@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Text, View, Platform, ToastAndroid, Alert, TextInput, Modal } from "react-native";
+import { StyleSheet, ScrollView, Keyboard, RefreshControl, TouchableOpacity, Text, View, Platform, ToastAndroid, Alert, TextInput, Modal, Image, KeyboardAvoidingView } from "react-native";
 import FileList from "./FileList";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useNavigation } from "expo-router";
@@ -34,8 +34,16 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
         sender: string,
         content: string,
         time: string,
-        isFile: boolean
+        type: MessageType
     }
+
+    enum MessageType {
+        TEXT,
+        IMAGE,
+        FILE
+    }
+
+    const fileMessageIconLight = require("../../assets/basic-file-icon-light.png");
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -47,62 +55,47 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
         // Always scroll to the end when a new message enters the chat
         if (chatContentRef.current) {
             chatContentRef.current.scrollToEnd({ animated: true });
-        }
+        } 
     }, [messages]);
 
     useEffect(() => {
         setMessages([
             {
-                sender: "anonymous",
-                content: "1 Ipsum. Lorem Ipsum. Lorem Ipsum. Lorem Ipsum.",
-                time: "23:07",
-                isFile: false
-            },
-            {
-                sender: "self",
-                content: "ok.",
-                time: "23:07",
-                isFile: false
-            },
-            {
-                sender: "anonymous",
-                content: "3 Ipsum. Lom. Lorem Ipsum. Lorem Ipsum.",
-                time: "23:07",
-                isFile: false
-            },
+                sender: "Mary",
+                content: "Schickt mir gerne eure Lösung wenn ihr fertig seid. LG Mary",
+                time: getSendTime(),
+                type: MessageType.TEXT
+            }
         ]);
     }, []);
 
     const uploadFileHandler = async () => {
-        try {
-            pickFileFromDevice().then((uploadedFileData) => {
-                if (uploadedFileData) {
-                    return uploadFile(uploadedFileData.blob, `${courseFolderURL}${encodeURI(uploadedFileData.fileName)}`)
-                    .then((status) => {
-                        if (!status) {
-                            throw new Error("Failed to upload file!");
-                        }
-                        return uploadedFileData.fileName;
-                    });
-                }
-            }).then((fileName) => {
-                if (!fileName) {
-                    throw new Error("Failed to upload file!");
-                }
-                const newMessage: ChatMessageType = {
-                    sender: "self",
-                    content: fileName,
-                    time: getSendTime(),
-                    isFile: true
-                }
-                setMessages([...messages, newMessage]);
-            }).catch((error) => {
-                throw error;
-            });   
-        }
-        catch {
-            Alert.alert("Failed to upload file!");
-        }
+        pickFileFromDevice().then((uploadedFileData) => {
+            if (uploadedFileData) {
+                return uploadFile(uploadedFileData.blob, `${courseFolderURL}${encodeURI(uploadedFileData.fileName)}`)
+                .then((status) => {
+                    if (!status) {
+                        throw new Error("Failed to upload file!");
+                    }
+                    return uploadedFileData.fileName;
+                });
+            }
+        }).then((fileName) => {
+            if (!fileName) {
+                throw new Error("Failed to upload file!");
+            }
+            const newMessage: ChatMessageType = {
+                sender: "self",
+                content: fileName,
+                time: getSendTime(),
+                type: MessageType.FILE
+            }
+            setMessages([...messages, newMessage]);
+        }).catch((error) => {
+            Alert.alert(error);
+        }).finally(() => {
+            setAttachPopupIsVisible(false);
+        });   
     }
 
     const uploadImageHandler = async (localFileURI: string, fileName: string) => {
@@ -121,7 +114,7 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
                     sender: "self",
                     content: localFileURI,
                     time: getSendTime(),
-                    isFile: true
+                    type: MessageType.IMAGE
                 }
                 setMessages([...messages, newMessage]);
             })
@@ -163,17 +156,42 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
     };
 
     const createTextBubbles = () => {
-        return messages.map((message: ChatMessageType) => {
+        return messages.map((message: ChatMessageType, idx: number) => {
             let ownMessage = message.sender === "self";
             return (
                 <View
                     style={[styles.chatRow, {alignItems: ownMessage ? "flex-end" : "flex-start"}]}
+                    key={idx}
                 >
                     <View
-                        style={[styles.chatBubble, {backgroundColor: ownMessage ? Colors.primary : Colors.secondary}]}
+                        style={[styles.chatBubble, {backgroundColor: ownMessage ? Colors.primary : Colors.lightGray}]}
                     >
-                        <Text style={styles.chatText}>{message.content}</Text>
-                        <Text style={styles.chatTime}>{message.time}</Text>
+                        {
+                            message.sender !== "self" ?
+                                <Text style={styles.senderName}>{message.sender}</Text>
+                            : null
+                        }
+                        {
+                            message.type === MessageType.IMAGE ?
+                                <Image
+                                    style={styles.imageMessage}
+                                    source={{ uri: message.content }}
+                                    resizeMode="cover"
+                                />
+                            : message.type === MessageType.FILE ?
+                                <View style={styles.fileMessage}>
+                                    <Image
+                                        style={styles.fileMessageIcon}
+                                        source={fileMessageIconLight}
+                                        resizeMode="contain"
+                                    />
+                                    <Text style={styles.fileName}>{message.content}</Text>
+                                </View>
+                            :
+                                <Text style={[styles.chatText, , !ownMessage ? styles.darkText : null]}>{message.content}</Text>
+                        }
+                        
+                        <Text style={[styles.chatTime, !ownMessage ? styles.darkText : null]}>{message.time}</Text>
                     </View>
                 </View>
             );
@@ -187,78 +205,90 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
         return `${hours}:${minutes}`;
     }
 
+    const [keyboardIsVisible, setKeyboardIsVisible] = useState<boolean>(false);
+
     return (
-        <View style={styles.container}>
-            <View style={styles.chatContainer}>
-                <ScrollView
-                    style={styles.chatContent}
-                    ref={chatContentRef}
-                >
-                    {createTextBubbles()}
-                </ScrollView>
-                <View style={styles.sendMessageContainer}>
-                    <View style={styles.chatInputContainer}>
-                        <TextInput
-                            style={styles.chatInputField}
-                            placeholder="Nachricht schreiben..."
-                            multiline={true}
-                            placeholderTextColor={Colors.secondary}
-                            value={currentMessage}
-                            onChangeText={(s) => { setCurrentMessage(s) }}
-                        />
-                        <View style={styles.attachButtons}>
-                            <Popover
-                                isVisible={attachPopupIsVisible}
-                                onRequestClose={() => setAttachPopupIsVisible(false)}
-                                animationConfig={{
-                                    duration: 300
-                                }}
-                                from={(
-                                    <TouchableOpacity style={styles.attachButton} onPress={() => setAttachPopupIsVisible(true)}>
-                                        <Ionicons name="attach" size={30} color={Colors.secondary} />
-                                    </TouchableOpacity>
-                                )}>
-                                <View style={styles.settingModal}>
-                                    <TouchableOpacity style={styles.settingButton} onPress={() => handleImagePick()}>
-                                        <Feather name="image" size={25} color={Colors.primary} />
-                                        <Text style={styles.settingText}>BILD</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.settingButton} onPress={() => uploadFileHandler()}>
-                                        <Feather name="file-text" size={25} color={Colors.primary} />
-                                        <Text style={styles.settingText}>DATEI</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </Popover>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{ flex: 1 }}
+        >
+            <View style={[
+                styles.container,
+                {
+                    paddingBottom: Platform.OS === "ios" && keyboardIsVisible ? 100
+                    : null
+                
+                }
+            ]}>
+                <View style={styles.chatContainer}>
+                    <ScrollView
+                        style={styles.chatContent}
+                        ref={chatContentRef}
+                    >
+                        {createTextBubbles()}
+                    </ScrollView>
+                    <View style={styles.sendMessageContainer}>
+                        <View style={styles.chatInputContainer}>
+                            <TextInput
+                                style={styles.chatInputField}
+                                placeholder="Nachricht schreiben..."
+                                multiline={true}
+                                placeholderTextColor={Colors.secondary}
+                                value={currentMessage}
+                                onChangeText={(s) => { setCurrentMessage(s) }}
+                                onFocus={() => setKeyboardIsVisible(true)}
+                                onBlur={() => setKeyboardIsVisible(false)}
+                            />
+                            <View style={styles.attachButtons}>
+                                <Popover
+                                    isVisible={attachPopupIsVisible}
+                                    onRequestClose={() => setAttachPopupIsVisible(false)}
+                                    animationConfig={{
+                                        duration: 300
+                                    }}
+                                    from={(
+                                        <TouchableOpacity style={styles.attachButton} onPress={() => setAttachPopupIsVisible(true)}>
+                                            <Ionicons name="attach" size={30} color={Colors.secondary} />
+                                        </TouchableOpacity>
+                                    )}>
+                                    <View style={styles.settingModal}>
+                                        <TouchableOpacity style={styles.settingButton} onPress={() => handleImagePick()}>
+                                            <Feather name="image" size={25} color={Colors.primary} />
+                                            <Text style={styles.settingText}>BILD</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.settingButton} onPress={() => uploadFileHandler()}>
+                                            <Feather name="file-text" size={25} color={Colors.primary} />
+                                            <Text style={styles.settingText}>DATEI</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Popover>
 
-                            <TouchableOpacity style={styles.attachButton} onPress={() => handleCameraPress()}>
-                                <Feather name="camera" size={23} color={Colors.secondary} />
-                            </TouchableOpacity>
+                                <TouchableOpacity style={styles.attachButton} onPress={() => handleCameraPress()}>
+                                    <Feather name="camera" size={23} color={Colors.secondary} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
+                        
+                        <TouchableOpacity style={styles.sendButton} onPress={() => {
+                            if (!currentMessage) {
+                                return;
+                            }
+
+                            const newMessage: ChatMessageType = {
+                                sender: "self",
+                                content: currentMessage,
+                                time: getSendTime(),
+                                type: MessageType.TEXT
+                            }
+                            setMessages([...messages, newMessage]);
+                            setCurrentMessage(undefined);
+                        }}>
+                            <Ionicons name="send" size={20} color="white" />
+                        </TouchableOpacity>
                     </View>
-                    
-                    <TouchableOpacity style={styles.sendButton} onPress={() => {
-                        if (!currentMessage) {
-                            return;
-                        }
-
-                        const now = new Date();  
-                        const hours = String(now.getHours()).padStart(2, "0");
-                        const minutes = String(now.getMinutes()).padStart(2, "0");
-
-                        const newMessage: ChatMessageType = {
-                            sender: "self",
-                            content: currentMessage,
-                            time: getSendTime(),
-                            isFile: false
-                        }
-                        setMessages([...messages, newMessage]);
-                        setCurrentMessage(undefined);
-                    }}>
-                        <Ionicons name="send" size={20} color="white" />
-                    </TouchableOpacity>
-                </View>
-            </View>          
-        </View>
+                </View>          
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -271,7 +301,6 @@ const styles = StyleSheet.create({
     },
     sendMessageContainer: {
         display: "flex",
-        maxHeight: 125,
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "flex-end",
@@ -334,6 +363,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: Colors.surface,
         gap: 10
     },
     settingText: {
@@ -365,19 +395,53 @@ const styles = StyleSheet.create({
     chatBubble: {
         maxWidth: "90%",
         borderRadius: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
+        padding: 12,
         gap: 5
     },
     chatText: {
         color: "white",
         fontSize: 15
     },
+    senderName: {
+        width: "100%",
+        fontSize: 13,
+        color: Colors.secondary,
+        fontWeight: "bold",
+    },
     chatTime: {
+        width: "100%",
         fontSize: 10,
         color: "white",
-        width: "100%",
-        marginLeft: "auto"
+        fontWeight: "bold",
+        marginLeft: "auto",
+        opacity: 0.5
+    },
+    darkText: {
+        color: Colors.primary
+    },
+    imageMessage: {
+        height: 225,
+        aspectRatio: 1,
+        borderRadius: 4,
+    },
+    fileMessage: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 10,
+        alignItems: "center",
+        padding: 15,
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        borderRadius: 4
+    },
+    fileMessageIcon: {
+        width: 30,
+        height: 30,
+    },
+    fileName: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+        maxWidth: "85%",
     }
 })
 

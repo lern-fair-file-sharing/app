@@ -55,7 +55,10 @@ const FolderCard = (props: FolderCardProps) => {
 
     return (
         <TouchableOpacity
-            style={styles.container}
+            style={[
+                styles.container,
+                { backgroundColor: decodeURIComponent(props.folderName) === PERSONAL_SPACE_FOLDER_NAME ? Colors.surface : "white"}
+            ]}
             onPress={() => { handleFolderPress() }}
         >
             <Image
