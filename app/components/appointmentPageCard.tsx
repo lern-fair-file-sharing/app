@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.primary,
         borderRadius: 8,
         padding: 10,
-        marginBottom: 24,
+        marginBottom: 20,
     },
     timedark: {
         fontSize: 14,
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surface,
         borderRadius: 8,
         padding: 10,
-        marginBottom: 24,
+        marginBottom: 20,
 
     },
     time: {

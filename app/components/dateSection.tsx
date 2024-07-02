@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     section: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        marginVertical: 10,
+        marginVertical: 6,
     },
     circle: {
         width: 55,
