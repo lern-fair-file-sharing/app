@@ -78,11 +78,13 @@ const StartPage = () => {
 const styles = StyleSheet.create({
     pageContainer: {
         backgroundColor: Colors.background,
+        flex: 1,
     },
     greeting: {
         backgroundColor: Colors.primary,
-        padding: 25,
-        marginBottom: 10,
+        padding: 24,
+        paddingTop: 60,
+        marginBottom: 24,
     },
     greetingText: {
         fontWeight: "700",
@@ -90,13 +92,13 @@ const styles = StyleSheet.create({
         color: Colors.onPrimary,
     },
     nextSteps: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        marginBottom: 16,
+        paddingHorizontal: 24,
+        marginBottom: 24,
     },
     nextStepsHeadline: {
         fontWeight: "700",
         fontSize: 20,
+        lineHeight: 20,
         color: Colors.primary,
     },
     nextStepsSub: {
@@ -104,26 +106,26 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
     },
     flatListContentConfirmation: {
-        paddingHorizontal: 16,
+        paddingHorizontal: 24,
     },
     flatListContentAppointments: {
-        paddingHorizontal: 16,
+        paddingHorizontal: 24,
         paddingBottom: 20
     },
     cardSeparator: {
-        width: 16,
-        height: 16,
+        width: 24,
+        height: 24,
     },
     nextAppointment: {
-        marginTop: 16,
-        paddingHorizontal: 16,
-        paddingBottom: 20,
+        marginTop: 24,
+        paddingHorizontal: 24,
+        paddingBottom: 24,
     },
     nextAppointmentText: {
         fontSize: 20,
         fontWeight: "700",
         color: Colors.primary,
-        marginBottom: 16,
+        marginBottom: 24,
     },
 });
 

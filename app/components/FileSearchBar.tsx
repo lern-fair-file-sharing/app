@@ -28,12 +28,12 @@ const FileSearchBar: React.FunctionComponent<SearchBarProps> = (props: SearchBar
     };
 
     return (
-        <View style={[styles.searchContainer, { borderColor: isFocused ? Colors.yellow : Colors.lightGray }]}>
-            <FontAwesome name="search" size={22} color={Colors.yellow} />
+        <View style={[styles.searchContainer, { borderColor: isFocused ? Colors.yellow : Colors.gray }]}>
+            <FontAwesome name="search" size={22} color={isFocused ? Colors.yellow : Colors.gray} />
             <TextInput
                 style={styles.searchInput}
                 placeholder="Durchsuchen..."
-                placeholderTextColor={Colors.lightGray}
+                placeholderTextColor={Colors.gray}
                 onChangeText={updateSearch}
                 value={search}
                 onFocus={() => {
@@ -56,7 +56,8 @@ const styles = StyleSheet.create({
         padding: 0,
         paddingLeft: 10,
         backgroundColor: "white",
-        borderRadius: 100,
+        borderColor: Colors.lightGray,
+        borderRadius: 8,
         borderWidth: 1,
     },
     searchInput: {
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         height: 40,
         paddingLeft: 10,
-        color: Colors.lightGray,
+        color: Colors.gray,
     },
 });
 

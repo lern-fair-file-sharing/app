@@ -8,11 +8,12 @@ const TabsLayout = () => {
         <Tabs screenOptions={{ 
             tabBarInactiveTintColor: Colors.primary,
             tabBarActiveTintColor: Colors.primary
-            }}>
+        }}>
             <Tabs.Screen name="index" options={{
                 headerTitle: "",
                 headerTitleAlign: "center",
                 headerTintColor: "white",
+                headerShown: false,
                 headerStyle: {
                     backgroundColor: Colors.primary
                 },
@@ -39,6 +40,7 @@ const TabsLayout = () => {
                 headerTitle: "Termine",
                 headerTitleAlign: "center",
                 headerTintColor: "white",
+                headerShown: false,
                 headerStyle: {
                     backgroundColor: Colors.primary
                 },
@@ -58,6 +60,7 @@ const TabsLayout = () => {
                 headerTitle: "Chat",
                 headerTitleAlign: "center",
                 headerTintColor: "white",
+                headerShown: false,
                 headerStyle: {
                     backgroundColor: Colors.primary
                 },
@@ -77,6 +80,7 @@ const TabsLayout = () => {
                 headerTitle: "Kurse",
                 headerTitleAlign: "center",
                 headerTintColor: "white",
+                headerShown: false,
                 headerStyle: {
                     backgroundColor: Colors.primary
                 },
@@ -96,6 +100,7 @@ const TabsLayout = () => {
                 headerTitle: "Dateien",
                 headerTitleAlign: "center",
                 headerTintColor: "white",
+                headerShown: false,
                 headerStyle: {
                     backgroundColor: Colors.primary
                 },

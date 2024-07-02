@@ -3,6 +3,7 @@ const Colors =
     primary: '#2B4B51', //Dark Green
     onPrimary: "#FFF", //White
     secondary: '#82B1B0', //Mint Green
+    secondaryLight: '#c3e3e2', //Mint Green
     yellow: '#FEDA50', //Yellow
     background: '#FFFFFF', //White
     surface: '#EDF4F3', //Light Mint Green
@@ -20,7 +21,8 @@ const Colors =
     onTagGreen: '#266940',
     onTagBlue: '#32578E',
     onTagPurple: '#70398A',
-    lightGray: '#AFBBBE',
+    gray: '#AFBBBE',
+    lightGray: '#EDEDED'
 };
 
 export default Colors;
