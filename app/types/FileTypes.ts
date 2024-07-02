@@ -8,8 +8,8 @@ export interface FileCardType {
     fileType: string,
     fileURL: string,
     fileID: number,
-    tags?: FileTagType[],
-    lastModified: string
+    lastModified: string,
+    fileTags?: FileTagType[]
 }
 
 export interface FileListType {

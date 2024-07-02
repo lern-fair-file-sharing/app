@@ -2,9 +2,12 @@ import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import Colors from '../utils/Colors';
 import ClassCard from '../components/classCard';
-
+import { getAllSystemTags, createSystemTag, assignSystemTag, deassignSystemTag, getAllFilesOfSystemTag} from '../utils/ServerRequests';
+import { FileTagType, FileCardType } from '../types/FileTypes';
 
 const ClassesPage = () => {
+    //Usestate for tags
+    const [tags, setTags] = React.useState([] as FileTagType[]);
     const classes = [
         {
             time: 'Dienstag, 13:00',
@@ -53,7 +56,10 @@ const ClassesPage = () => {
                             year={course.year}
                             status={course.status}
                             imageUrl={course.imageUrl}
-                            onPress={() => { }}
+                            onPress={
+                                async () => {
+                                }
+                            }
                         />
                     ))}
                 </View>

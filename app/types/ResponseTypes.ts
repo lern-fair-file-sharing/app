@@ -39,6 +39,7 @@ export interface PropSearchResponseType {
                     "oc:tags": string,
                     "d:getlastmodified": string,
                     "d:resourcetype": string,
+                    "nc:system-tags"?: any,
                 },
                 "d:status": string
             }

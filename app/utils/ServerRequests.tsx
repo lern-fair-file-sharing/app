@@ -8,11 +8,11 @@ var parseString = require("react-native-xml2js").parseString;
 
 
 const host = Constants?.expoConfig?.hostUri
-  ? Constants.expoConfig.hostUri.split(":")?.shift()
-  : "unkown";
+    ? Constants.expoConfig.hostUri.split(":")?.shift()
+    : "unkown";
 
 const machineURL = `http://${host}:${process.env.EXPO_PUBLIC_HOST_PORT}`
-const user = process.env.EXPO_PUBLIC_USER; 
+const user = process.env.EXPO_PUBLIC_USER;
 const userpath = "/files/" + user;
 
 // This function is used to get the list of files and folders from the server
@@ -60,8 +60,8 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
                         let file: FileCardType = {
                             fileName: path.substring(path.lastIndexOf("/") + 1),
                             fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
+                            fileID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:fileid"][0]),
                             fileURL: path,
-                            tags: element["d:propstat"][0]["d:prop"][0]["oc:tags"][0].split(","),
                             lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0]
                         };
                         fileList.files.push(file);
@@ -74,7 +74,7 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
         .catch((error) => console.error(error));
 };
 
-export const searchLatestFiles = async(): Promise<FileCardType[] | void> => {
+export const searchLatestFiles = async (): Promise<FileCardType[] | void> => {
     const requestHeaders = new Headers();
     requestHeaders.append("content-Type", "text/xml");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
@@ -92,17 +92,12 @@ export const searchLatestFiles = async(): Promise<FileCardType[] | void> => {
 
     let fileList: FileCardType[] = [];
 
-    return fetch(machineURL +"/remote.php/dav", requestOptions as RequestInit)
+    return fetch(machineURL + "/remote.php/dav", requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => {
             parseString(result, function (err: any, result: any) {
                 result as PropSearchResponseType;
                 result["d:multistatus"]["d:response"].forEach((element: any) => {
-                    //let tagList: FileTagType[] = [] as FileTagType[];
-                    //for (let i = 0; i < element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0].length; i++) {
-                    //    console.debug(element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0][i]);
-                    //};
-                    //console.debug(element["d:propstat"][0]["d:prop"][0]["nc:system-tags"]);
                     let file: FileCardType = {
                         fileName: element["d:propstat"][0]["d:prop"][0]["d:displayname"][0],
                         fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
@@ -118,13 +113,13 @@ export const searchLatestFiles = async(): Promise<FileCardType[] | void> => {
         .catch((error) => console.error(error));
 };
 
-export const searchFilesByKeyword = async(keyword:String): Promise<FileCardType[] | void> => {
+export const searchFilesByKeyword = async (keyword: String): Promise<FileCardType[] | void> => {
     const requestHeaders = new Headers();
     requestHeaders.append("content-Type", "text/xml");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
 
 
-    const raw = "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\">\r\n     <d:basicsearch>\r\n         <d:select>\r\n             <d:prop>\r\n                 <oc:fileid/>\r\n                 <d:displayname/>\r\n                 <d:getcontenttype/>\r\n                 <d:getetag/>\r\n                 <oc:size/>\r\n                 <oc:tags/>\r\n                 <d:getlastmodified/>\r\n                 <d:resourcetype/>\r\n             </d:prop>\r\n         </d:select>\r\n         <d:from>\r\n             <d:scope>\r\n                 <d:href>" + userpath + "</d:href>\r\n                 <d:depth>infinity</d:depth>\r\n             </d:scope>\r\n         </d:from>\r\n         <d:where>\r\n             <d:like>\r\n                <d:prop>\r\n                    <d:displayname/>\r\n                </d:prop>\r\n                <d:literal>%"+ keyword +"%</d:literal>\r\n            </d:like>\r\n         </d:where>\r\n         <d:orderby/>\r\n    </d:basicsearch>\r\n</d:searchrequest>"; 
+    const raw = "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\">\r\n     <d:basicsearch>\r\n         <d:select>\r\n             <d:prop>\r\n                 <oc:fileid/>\r\n                 <d:displayname/>\r\n                 <d:getcontenttype/>\r\n                 <d:getetag/>\r\n                 <oc:size/>\r\n                 <oc:tags/>\r\n                 <d:getlastmodified/>\r\n                 <d:resourcetype/>\r\n             </d:prop>\r\n         </d:select>\r\n         <d:from>\r\n             <d:scope>\r\n                 <d:href>" + userpath + "</d:href>\r\n                 <d:depth>infinity</d:depth>\r\n             </d:scope>\r\n         </d:from>\r\n         <d:where>\r\n             <d:like>\r\n                <d:prop>\r\n                    <d:displayname/>\r\n                </d:prop>\r\n                <d:literal>%" + keyword + "%</d:literal>\r\n            </d:like>\r\n         </d:where>\r\n         <d:orderby/>\r\n    </d:basicsearch>\r\n</d:searchrequest>";
 
     const requestOptions = {
         method: "SEARCH",
@@ -135,30 +130,30 @@ export const searchFilesByKeyword = async(keyword:String): Promise<FileCardType[
 
     let fileList: FileCardType[] = [];
 
-    return fetch(machineURL +"/remote.php/dav", requestOptions as RequestInit)
+    return fetch(machineURL + "/remote.php/dav", requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => {
             if (result === undefined) {
                 return [];
             }
             else {
-            parseString(result, function (err: any, result: any) {
-                result as PropSearchResponseType;
-                result["d:multistatus"]["d:response"].forEach((element: any) => {
-                    let file: FileCardType = {
-                        fileName: element["d:propstat"][0]["d:prop"][0]["d:displayname"][0],
-                        fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
-                        fileURL: element["d:href"][0],
-                        tags: element["d:propstat"][0]["d:prop"][0]["oc:tags"][0].split(","),
-                        lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0]
-                    };
-                    fileList.push(file);
+                parseString(result, function (err: any, result: any) {
+                    result as PropSearchResponseType;
+                    result["d:multistatus"]["d:response"].forEach((element: any) => {
+                        let file: FileCardType = {
+                            fileName: element["d:propstat"][0]["d:prop"][0]["d:displayname"][0],
+                            fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
+                            fileID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:fileid"][0]),
+                            fileURL: element["d:href"][0],
+                            lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0]
+                        };
+                        fileList.push(file);
+                    });
                 });
-            });
-            return fileList;
+                return fileList;
             }
         })
-        .catch((error) => {return [] as FileCardType[];});
+        .catch((error) => { return [] as FileCardType[]; });
 };
 
 export const fetchFile = (fileURL: string): Promise<string | void> => {
@@ -230,12 +225,12 @@ export const downloadFile = (fileURL: string): Promise<void> => {
                 return FileSystem.writeAsStringAsync(fileUri, base64Data.split(",")[1], {
                     encoding: FileSystem.EncodingType.Base64,
                 })
-                .then(() => {
-                    return Sharing.shareAsync(fileUri, { mimeType: "application/octet-stream", dialogTitle: "Share the file" });
-                })
-                .catch(error => {
-                    throw error;
-                });
+                    .then(() => {
+                        return Sharing.shareAsync(fileUri, { mimeType: "application/octet-stream", dialogTitle: "Share the file" });
+                    })
+                    .catch(error => {
+                        throw error;
+                    });
             }
         })
         .catch(error => {
@@ -284,7 +279,7 @@ export const createFolder = async (folderURL: string): Promise<boolean | void> =
         .catch((error) => { console.error(error); return false });
 }
 
-export const uploadFile = async (file: Blob, location: string ): Promise<boolean | void> => {
+export const uploadFile = async (file: Blob, location: string): Promise<boolean | void> => {
     const requestHeaders = new Headers();
     requestHeaders.append("Content-Type", "text/plain");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
@@ -297,8 +292,8 @@ export const uploadFile = async (file: Blob, location: string ): Promise<boolean
         body: raw,
         redirect: "follow"
     };
-    
-    fetch(machineURL+location, requestOptions as RequestInit)
+
+    fetch(machineURL + location, requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => { return true })
         .catch((error) => {
@@ -322,31 +317,94 @@ export const getAllSystemTags = async (): Promise<FileTagType[] | void> => {
     };
 
     let tags: FileTagType[] = [];
-    fetch(machineURL + "/remote.php/dav/systemtags/", requestOptions as RequestInit)
-        .then((response) => response.text())
-        .then((result) => {
-            parseString(result, function (err: any, result: any) {
-                result["d:multistatus"]["d:response"].forEach((element: any) => {
-                    let tag: FileTagType = {
-                        tagName: element["d:propstat"][0]["d:prop"][0]["oc:display-name"][0],
-                        tagID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:id"][0])
-                    };
-                    if (tag.tagName !== "") {
-                        tags.push(tag);
-                    }
-                });
+    try {
+        const response = await fetch(machineURL + "/remote.php/dav/systemtags/", requestOptions);
+        const result = await response.text();
+        parseString(result, function (err: any, result: any) {
+            result["d:multistatus"]["d:response"].forEach((element: any) => {
+                let tag: FileTagType = {
+                    tagName: element["d:propstat"][0]["d:prop"][0]["oc:display-name"][0],
+                    tagID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:id"][0])
+                };
+                if (tag.tagName !== "") {
+                    tags.push(tag);
+                }
             });
-            return tags;
-        })
-        .catch((error) => console.error(error));
+        });
+    } catch (error) {
+        console.error(error);
+    }
+    return tags;
 }
 
-export const createSystemTag = async (tagName: string): Promise<boolean | void> => {
+export const getAllFilesOfSystemTag = async (tagID: number): Promise<FileCardType[] | void> => {
     const requestHeaders = new Headers();
     requestHeaders.append("Content-Type", "text/plain");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
 
-    const raw = {"userVisible": true,"userAssignable": true,"canAssign": true,"name": "bozo"};
+    const raw = "<?xml version=\"1.0\"?>\r\n<oc:filter-files xmlns:d=\"DAV:\" xmlns:nc=\"http://nextcloud.org/ns\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:ocs=\"http://open-collaboration-services.org/ns\">\r\n	<d:prop>\r\n        <oc:fileid />\r\n        <d:displayname/>\r\n        <d:getcontenttype/>\r\n        <d:getetag/>\r\n        <oc:size />\r\n        <oc:tags />\r\n        <d:getlastmodified/>\r\n        <d:resourcetype/>\r\n        <nc:system-tags />\r\n	</d:prop>\r\n    <oc:filter-rules>\r\n        <oc:systemtag>"+tagID.toString()+"</oc:systemtag>\r\n    </oc:filter-rules>\r\n</oc:filter-files>";
+
+    const requestOptions = {
+        method: "REPORT",
+        headers: requestHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    let fileList: FileCardType[] = [];
+
+    return fetch(machineURL + "/remote.php/dav"+ userpath, requestOptions as RequestInit)
+        .then((response) => response.text())
+        .then((result) => {
+            if (result === undefined) {
+                return [];
+            }
+            else {
+                parseString(result, function (err: any, result: any) {
+                    result as PropSearchResponseType;
+                    result["d:multistatus"]["d:response"].forEach((element: any) => {
+
+                        let tags: FileTagType[] = [];
+                        if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"]) {
+                            element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"].forEach((tag: any) => {
+                                let tagObject: FileTagType = {
+                                    tagName: tag["_"],
+                                    tagID: parseInt(tag["$"]["oc:id"])
+                                }
+                                tags.push(tagObject);
+                            });
+                        }
+
+                        let file: FileCardType = {
+                            fileName: element["d:propstat"][0]["d:prop"][0]["d:displayname"][0],
+                            fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
+                            fileID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:fileid"][0]),
+                            fileURL: element["d:href"][0],
+                            lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0],
+                            fileTags: tags
+                        };
+                        
+                        fileList.push(file);
+                    });
+                });
+                return fileList;
+            }
+        })
+        .catch((error) => { return [] as FileCardType[]; });
+
+}
+
+export const createSystemTag = async (tagName: string): Promise<boolean | void> => {
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
+
+    const raw = JSON.stringify({
+        "userVisible": true,
+        "userAssignable": true,
+        "canAssign": true,
+        "name": tagName
+    });
 
     const requestOptions = {
         method: "POST",
@@ -357,16 +415,22 @@ export const createSystemTag = async (tagName: string): Promise<boolean | void> 
 
     fetch(machineURL + "/remote.php/dav/systemtags/", requestOptions as RequestInit)
         .then((response) => response.text())
-        .then((result) => { return true })
+        .then((result) => { return true; console.log(result) })
         .catch((error) => { console.error(error); return false });
 }
 
-export const assignTag = async (fileURL: string, tag: FileTagType): Promise<boolean | void> => {
+export const assignSystemTag = async (fileID: number, tag: FileTagType): Promise<boolean | void> => {
     const requestHeaders = new Headers();
-    requestHeaders.append("Content-Type", "text/plain");
+    requestHeaders.append("Content-Type", "application/json");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
-    
-    const raw = {"id":tag.tagID,"userVisible":true,"userAssignable":true,"canAssign":true,"name":tag.tagName};
+
+    const raw = JSON.stringify({
+        "id": tag.tagID.toString(),
+        "userVisible": true,
+        "userAssignable": true,
+        "canAssign": true,
+        "name": tag.tagName
+    });
 
     const requestOptions = {
         method: "PUT",
@@ -375,7 +439,33 @@ export const assignTag = async (fileURL: string, tag: FileTagType): Promise<bool
         redirect: "follow"
     };
 
-    fetch(machineURL + fileURL, requestOptions as RequestInit)
+    fetch(machineURL + "/remote.php/dav/systemtags-relations/files/" + fileID + "/" + tag.tagID.toString(), requestOptions as RequestInit)
+        .then((response) => response.text())
+        .then((result) => { return true })
+        .catch((error) => { console.error(error); return false });
+}
+
+export const deassignSystemTag = async (fileID: number, tag: FileTagType): Promise<boolean | void> => {
+    const requestHeaders = new Headers();
+    requestHeaders.append("Content-Type", "application/json");
+    requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
+
+    const raw = JSON.stringify({
+        "id": tag.tagID.toString(),
+        "userVisible": true,
+        "userAssignable": true,
+        "canAssign": true,
+        "name": tag.tagName
+    });
+
+    const requestOptions = {
+        method: "DELETE",
+        headers: requestHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    fetch(machineURL + "/remote.php/dav/systemtags-relations/files/" + fileID + "/" + tag.tagID.toString(), requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => { return true })
         .catch((error) => { console.error(error); return false });
