@@ -293,7 +293,7 @@ export const uploadFile = async (file: Blob, location: string ): Promise<boolean
         redirect: "follow"
     };
     
-    fetch(machineURL+location, requestOptions as RequestInit)
+    return fetch(machineURL+location, requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => { return true })
         .catch((error) => {
