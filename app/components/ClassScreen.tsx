@@ -55,15 +55,15 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
         // Always scroll to the end when a new message enters the chat
         if (chatContentRef.current) {
             chatContentRef.current.scrollToEnd({ animated: true });
-        } 
+        }
     }, [messages]);
 
     useEffect(() => {
         setMessages([
             {
                 sender: "Mary",
-                content: "Schickt mir gerne eure Lösung wenn ihr fertig seid. LG Mary",
-                time: getSendTime(),
+                content: "Schickt mir gerne eure Lösung wenn ihr fertig seid.\nLG Mary",
+                time: "23:07",
                 type: MessageType.TEXT
             }
         ]);
@@ -74,25 +74,23 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
             if (uploadedFileData) {
                 return uploadFile(uploadedFileData.blob, `${courseFolderURL}${encodeURI(uploadedFileData.fileName)}`)
                 .then((status) => {
-                    if (!status) {
-                        throw new Error("Failed to upload file!");
+                    if (status) {
+                        return uploadedFileData.fileName;
                     }
-                    return uploadedFileData.fileName;
                 });
             }
         }).then((fileName) => {
-            if (!fileName) {
-                throw new Error("Failed to upload file!");
+            if (fileName) {            
+                const newMessage: ChatMessageType = {
+                    sender: "self",
+                    content: fileName,
+                    time: getSendTime(),
+                    type: MessageType.FILE
+                }
+                setMessages([...messages, newMessage]);
             }
-            const newMessage: ChatMessageType = {
-                sender: "self",
-                content: fileName,
-                time: getSendTime(),
-                type: MessageType.FILE
-            }
-            setMessages([...messages, newMessage]);
         }).catch((error) => {
-            Alert.alert(error);
+            Alert.alert("Error!" + error);
         }).finally(() => {
             setAttachPopupIsVisible(false);
         });   
@@ -215,15 +213,14 @@ const ClassScreen = (props: NativeStackScreenProps<RootStackParamList, "ClassScr
             <View style={[
                 styles.container,
                 {
-                    paddingBottom: Platform.OS === "ios" && keyboardIsVisible ? 100
-                    : null
-                
+                    paddingBottom: Platform.OS === "ios" && keyboardIsVisible ? 100 : null
                 }
             ]}>
                 <View style={styles.chatContainer}>
                     <ScrollView
                         style={styles.chatContent}
                         ref={chatContentRef}
+                        onContentSizeChange={() => chatContentRef.current?.scrollToEnd({ animated: true })}
                     >
                         {createTextBubbles()}
                     </ScrollView>
@@ -301,6 +298,7 @@ const styles = StyleSheet.create({
     },
     sendMessageContainer: {
         display: "flex",
+        maxHeight: 125,
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "flex-end",
