@@ -9,8 +9,6 @@ import { fetchFile, downloadFile, deleteItem } from "../utils/ServerRequests";
 import { FileCardType } from "../types/FileTypes";
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from "expo-intent-launcher";
-import * as Sharing from 'expo-sharing';
-import * as Linking from 'expo-linking';
 import WebView from "react-native-webview";
 
 

@@ -120,7 +120,6 @@ const FilesTabScreen = () => {
 
         return (
             <ScrollView
-                style={styles.timeBasedFileActivities}
                 refreshControl={
                     <RefreshControl refreshing={false} onRefresh={onRefresh} />
                 }
@@ -165,33 +164,28 @@ const FilesTabScreen = () => {
 
                 <View
                     style={{
-                        borderBottomColor: Colors.lightGray,
+                        borderBottomColor: Colors.gray,
                         borderBottomWidth: StyleSheet.hairlineWidth,
                     }}
                 />
 
                 {
                     fileView === FileView.Activity ? fileTimeCategorization() :
-                        fileView === FileView.Search ? (
+                        (
                             <ScrollView
                                 style={styles.courseFolderSection}
                                 refreshControl={
                                     <RefreshControl refreshing={false} onRefresh={onRefresh} />
                                 }
                             >
-                                <FileList folders={[]} files={searchResult} />
+                                {
+                                    fileView === FileView.Search ?
+                                        <FileList folders={[]} files={searchResult} />
+                                    :
+                                        <FileList folders={allFolders} files={allFiles} refreshFunction={fetchAllData} />
+                                }
                             </ScrollView>
                         )
-                            : (
-                                <ScrollView
-                                    style={styles.courseFolderSection}
-                                    refreshControl={
-                                        <RefreshControl refreshing={false} onRefresh={onRefresh} />
-                                    }
-                                >
-                                    <FileList folders={allFolders} files={allFiles} refreshFunction={fetchAllData} />
-                                </ScrollView>
-                            )
                 }
             </View>
         </View>
@@ -246,7 +240,7 @@ const styles = StyleSheet.create({
         gap: 7
     },
     fileActivityTime: {
-        color: Colors.lightGray
+        color: Colors.secondary
     },
     courseFolderSection: {
     },
