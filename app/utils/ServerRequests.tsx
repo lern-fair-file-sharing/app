@@ -70,7 +70,7 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
                                     tags.push(tagObject);
                                 });
                             };
-                        }
+                          }
                         
 
                         let file: FileCardType = {
@@ -313,11 +313,20 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
     };
 
     fetch(machineURL + location, requestOptions as RequestInit)
-        .then((response) => response.text())
-        .then((result) => { return true })
+        .then((response) => {return response.text()})
+        .then(async (result) => { 
+            let fileID: number
+            await getFolderContent(location).then((response: void | FileListType) => {
+                if (response) {
+                    fileID = response.files[response.files.length - 1].fileID;
+                }
+            });
+            
+
+            return true })
         .catch((error) => {
             console.error(error); return false
-        });
+    });
 }
 
 

@@ -61,7 +61,7 @@ const ClassesPage = () => {
                                     await getAllFilesOfSystemTag(2).then((response: void | FileCardType[]) => {
                                         if (Array.isArray(response)) {
                                             //console log response.fileTags
-                                            //console.log(response[0].fileTags);
+                                            console.log(response[0].fileTags);
                                         }
                                     });
                                 }
