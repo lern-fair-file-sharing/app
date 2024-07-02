@@ -4,6 +4,7 @@ import * as FileSystem from "expo-file-system";
 import { Alert, Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Sharing from "expo-sharing";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 var parseString = require("react-native-xml2js").parseString;
 
 
@@ -316,9 +317,19 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
         .then((response) => {return response.text()})
         .then(async (result) => { 
             let fileID: number
-            await getFolderContent(location).then((response: void | FileListType) => {
+            await getFolderContent(location).then( async (response: void | FileListType) => {
                 if (response) {
                     fileID = response.files[response.files.length - 1].fileID;
+                    let tags = await getAllSystemTags().then((tags: void | FileTagType[]) => {
+                        if (tags) {
+                            tags.forEach(async (tag: FileTagType) => {
+                                if (tag.tagName === "Uploaded") {
+                                    await assignSystemTag(fileID, tag);
+                                }
+                            });
+                        }
+                    });
+
                 }
             });
             
