@@ -9,6 +9,7 @@ interface Appointment {
     endTime: string;
     title: string;
     description: string;
+    isNow?: boolean;
 }
 
 interface DateSectionProps {
@@ -44,6 +45,7 @@ const DateSection: React.FC<DateSectionProps> = ({ date, appointments }) => {
                         endTime={appointment.endTime}
                         title={appointment.title}
                         description={appointment.description}
+                        isNow={appointment.isNow}
                     />
                 ))}
             </View>

@@ -11,11 +11,27 @@ interface Appointment {
     endTime: string;
     title: string;
     description: string;
+    isNow?: boolean;
 }
 
 const appointments: Appointment[] = [
-    { id: '1', date: '2024-06-24', startTime: '10:00 Uhr', endTime: '12:00 Uhr', title: 'Math Lesson', description: 'Chapter 5: Algebra' },
-    { id: '2', date: '2024-06-24', startTime: '1:00 Uhr', endTime: '3:00 Uhr', title: 'History Class', description: 'World War II' },
+    { 
+        id: '1', 
+        date: '2024-06-24',     
+        startTime: '10:00 Uhr', 
+        endTime: '12:00 Uhr', 
+        title: 'Math Lesson', 
+        description: 'Chapter 5: Algebra', 
+        isNow: true,
+    },
+    { 
+        id: '2', 
+        date: '2024-06-24', 
+        startTime: '1:00 Uhr', 
+        endTime: '3:00 Uhr', 
+        title: 'History Class', 
+        description: 'World War II',
+     },
     { id: '3', date: '2024-06-25', startTime: '11:00 Uhr', endTime: '1:00 Uhr', title: 'Science Experiment', description: 'Physics Lab' },
     // Add more appointments as needed
 ];
