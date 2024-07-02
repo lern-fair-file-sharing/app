@@ -2,19 +2,46 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Colors from '../utils/Colors';
 
+interface Participant {
+    id: string;
+    image: string;
+}
 interface AppointmentCardProps {
     startTime: string;
     endTime: string;
     title: string;
     description: string;
     isNow?: boolean;
+    participants?: Participant[];
 }
 
-const AppointmentCard: React.FC<AppointmentCardProps> = ({ startTime, endTime, title, description, isNow }) => {
+const AppointmentCard: React.FC<AppointmentCardProps> = ({ startTime, endTime, title, description, isNow, participants = [] }) => {
+    const renderParticipants = () => {
+        const displayedParticipants = participants.slice(0, 2);
+        const extraParticipantsCount = participants.length - 2;
+
+
+        return (
+            <View style={styles.participantsContainer}>
+                {displayedParticipants.map((participant) => (
+                    <Image key={participant.id} source={{ uri: participant.image }} style={styles.participantImage} />
+                ))}
+                {extraParticipantsCount > 0 && (
+                    <View style={styles.extraParticipants}>
+                        <Text style={styles.extraParticipantsText}>{`+${extraParticipantsCount}`}</Text>
+                    </View>
+                )}
+            </View>
+        );
+    };
+
     if (isNow) {
         return (
             <View style={styles.joincard}>
+                <View style={styles.cardHeader}>
                 <Text style={styles.timedark}>{`${startTime} - ${endTime}`}</Text>
+                {participants.length > 0 && renderParticipants()}
+                </View> 
                 <View style={styles.info}>
                     <Text style={styles.titledark}>{title}</Text>
                     <Text style={styles.descriptiondark}>{description}</Text>
@@ -28,7 +55,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ startTime, endTime, t
 
     return (
         <View style={styles.card}>
-            <Text style={styles.time}>{`${startTime} - ${endTime}`}</Text>
+            <View style={styles.cardHeader}>
+                <Text style={styles.time}>{`${startTime} - ${endTime}`}</Text>
+                {participants.length > 0 && renderParticipants()}
+            </View>
             <View style={styles.info}>
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.description}>{description}</Text>
@@ -62,7 +92,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 8,
         alignItems: 'center',
-        margin: 10,
+        marginVertical: 10,
     },
     card: {
         backgroundColor: Colors.surface,
@@ -87,6 +117,36 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: Colors.primary,
     },
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+      participantsContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      participantImage: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        marginLeft: -8,
+
+      },
+      extraParticipants: {
+        backgroundColor: Colors.surface,
+        borderRadius: 12,
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: -8,
+      },
+      extraParticipantsText: {
+        color: Colors.primary,
+        fontSize: 12,
+        fontWeight: 'bold',
+      },
 });
 
 export default AppointmentCard;

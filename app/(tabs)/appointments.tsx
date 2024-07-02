@@ -4,6 +4,10 @@ import DateSection from '../components/dateSection';
 import AddButton from '../components/addAppointmentButton';
 import Colors from '../utils/Colors';
 
+interface Participant {
+    id: string;
+    image: string;
+}
 interface Appointment {
     id: string;
     date: string;
@@ -12,28 +16,98 @@ interface Appointment {
     title: string;
     description: string;
     isNow?: boolean;
+    participants?: Participant[];
 }
 
 const appointments: Appointment[] = [
-    { 
-        id: '1', 
-        date: '2024-06-24',     
-        startTime: '10:00 Uhr', 
-        endTime: '12:00 Uhr', 
-        title: 'Math Lesson', 
-        description: 'Chapter 5: Algebra', 
+    {
+        id: '1',
+        date: '2024-07-05',
+        startTime: '10:00 Uhr',
+        endTime: '12:00 Uhr',
+        title: 'Mathe bei Max Mustermann',
+        description: 'Lektion 5: Algebra',
         isNow: true,
+        participants: [
+            { id: 'p1', image: 'https://picsum.photos/200' },
+            { id: 'p2', image: 'https://avatars.githubusercontent.com/u/63316860?s=200&v=4' },
+            { id: 'p3', image: 'https://picsum.photos/200' },
+            { id: 'p4', image: 'https://picsum.photos/200' },
+            { id: 'p5', image: 'https://picsum.photos/200' },
+        ],
     },
-    { 
-        id: '2', 
-        date: '2024-06-24', 
-        startTime: '1:00 Uhr', 
-        endTime: '3:00 Uhr', 
-        title: 'History Class', 
-        description: 'World War II',
-     },
-    { id: '3', date: '2024-06-25', startTime: '11:00 Uhr', endTime: '1:00 Uhr', title: 'Science Experiment', description: 'Physics Lab' },
-    // Add more appointments as needed
+    {
+        id: '2',
+        date: '2024-07-05',
+        startTime: '1:00 Uhr',
+        endTime: '3:00 Uhr',
+        title: 'Englisch',
+        description: 'Past Perfect Tense',
+        participants: [
+            { id: 'p1', image: 'https://avatars.githubusercontent.com/u/63316860?s=200&v=4' },
+            { id: 'p2', image: 'https://picsum.photos/200' },
+        ],
+    },
+    {
+        id: '3',
+        date: '2024-07-08',
+        startTime: '11:00 Uhr',
+        endTime: '1:00 Uhr',
+        title: 'Deutsch',
+        description: 'Sturm und Drang',
+        participants: [
+            { id: 'p1', image: 'https://avatars.githubusercontent.com/u/63316860?s=200&v=4' },
+            { id: 'p2', image: 'https://picsum.photos/200' },
+            { id: 'p3', image: 'https://picsum.photos/200' },
+            { id: 'p4', image: 'https://picsum.photos/200' },
+            { id: 'p5', image: 'https://picsum.photos/200' },
+            { id: 'p6', image: 'https://picsum.photos/200' },
+          ],
+    },
+    {
+        id: '4',
+        date: '2024-07-11',
+        startTime: '1:00 Uhr',
+        endTime: '3:00 Uhr',
+        title: 'Mathe bei Max Mustermann',
+        description: 'Lektion 5.1: Geometrie',
+        participants: [
+            { id: 'p1', image: 'https://avatars.githubusercontent.com/u/63316860?s=200&v=4' },
+            { id: 'p2', image: 'https://picsum.photos/200' },
+        ],
+    },
+    {
+        id: '5',
+        date: '2024-07-11',
+        startTime: '11:00 Uhr',
+        endTime: '1:00 Uhr',
+        title: 'Deutsch',
+        description: 'Leseübung',
+        participants: [
+            { id: 'p1', image: 'https://avatars.githubusercontent.com/u/63316860?s=200&v=4' },
+            { id: 'p2', image: 'https://picsum.photos/200' },
+            { id: 'p3', image: 'https://picsum.photos/200' },
+            { id: 'p4', image: 'https://picsum.photos/200' },
+            { id: 'p5', image: 'https://picsum.photos/200' },
+            { id: 'p6', image: 'https://picsum.photos/200' },
+          ],
+    },
+    {
+        id: '6',
+        date: '2024-07-11',
+        startTime: '11:00 Uhr',
+        endTime: '1:00 Uhr',
+        title: 'Physik',
+        description: 'Relativitätstheorie',
+        participants: [
+            { id: 'p1', image: 'https://avatars.githubusercontent.com/u/63316860?s=200&v=4' },
+            { id: 'p2', image: 'https://picsum.photos/200' },
+            { id: 'p3', image: 'https://picsum.photos/200' },
+            { id: 'p4', image: 'https://picsum.photos/200' },
+            { id: 'p5', image: 'https://picsum.photos/200' },
+            { id: 'p6', image: 'https://picsum.photos/200' },
+          ],
+    }
 ];
 
 const CalendarPage: React.FC = () => {
@@ -45,13 +119,13 @@ const CalendarPage: React.FC = () => {
     return (
         <View style={styles.container}>
             <View style={styles.calendar}>
-            <Text style={styles.monthText}>Juli</Text>
-            <View style={styles.monthDivider} />
-            <ScrollView>
-                {Object.keys(groupedAppointments).map((date) => (
-                    <DateSection key={date} date={date} appointments={groupedAppointments[date]} />
-                ))}
-            </ScrollView>
+                <Text style={styles.monthText}>Juli</Text>
+                <View style={styles.monthDivider} />
+                <ScrollView>
+                    {Object.keys(groupedAppointments).map((date) => (
+                        <DateSection key={date} date={date} appointments={groupedAppointments[date]} />
+                    ))}
+                </ScrollView>
             </View>
             <AddButton onPress={() => console.log('Add new appointment')} />
         </View>

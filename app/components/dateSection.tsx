@@ -3,6 +3,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import AppointmentCard from './appointmentPageCard';
 import Colors from '../utils/Colors';
 
+
+interface Participant {
+    id: string;
+    image: string;
+  }
 interface Appointment {
     id: string;
     startTime: string;
@@ -10,6 +15,7 @@ interface Appointment {
     title: string;
     description: string;
     isNow?: boolean;
+    participants?: Participant[];
 }
 
 interface DateSectionProps {
@@ -46,6 +52,7 @@ const DateSection: React.FC<DateSectionProps> = ({ date, appointments }) => {
                         title={appointment.title}
                         description={appointment.description}
                         isNow={appointment.isNow}
+                        participants={appointment.participants}
                     />
                 ))}
             </View>
