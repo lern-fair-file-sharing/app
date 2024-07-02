@@ -22,7 +22,7 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
     requestHeaders.append("Content-Type", "text/plain");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
 
-    const raw = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">\r\n   <d:prop>\r\n     <d:getlastmodified/>\r\n     <d:getcontentlength/>\r\n     <d:getcontenttype/>\r\n     <oc:permissions/>\r\n     <d:resourcetype/>\r\n     <d:getetag/>\r\n     <oc:fileid />\r\n     <oc:permissions />\r\n     <oc:size />\r\n     <oc:tags />\r\n     <d:getcontentlength />\r\n     <nc:has-preview />\r\n     <oc:favorite />\r\n     <oc:comments-unread />\r\n     <oc:owner-display-name />\r\n     <oc:share-types />\r\n   </d:prop>\r\n </d:propfind>";
+    const raw = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">\r\n   <d:prop>\r\n     <d:getlastmodified/>\r\n     <d:getcontentlength/>\r\n     <d:getcontenttype/>\r\n     <oc:permissions/>\r\n     <d:resourcetype/>\r\n     <d:getetag/>\r\n     <oc:fileid />\r\n     <oc:permissions />\r\n     <oc:size />\r\n     <oc:tags />\r\n     <d:getcontentlength />\r\n     <nc:has-preview />\r\n     <oc:favorite />\r\n     <oc:comments-unread />\r\n     <oc:owner-display-name />\r\n     <oc:share-types />\r\n  <nc:system-tags />\r\n   </d:prop>\r\n </d:propfind>";
 
     const requestOptions = {
         method: "PROPFIND",
@@ -57,12 +57,29 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
                         }
                     }
                     else {
+                        //console.log(element["d:propstat"][0]["d:prop"][0]);
+
+                        let tags: FileTagType[] = [];
+                        if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"].length !== 0) {
+                           if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"] !== undefined) {
+                                element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"].forEach((tag: any) => {
+                                    let tagObject: FileTagType = {
+                                        tagName: tag["_"],
+                                        tagID: parseInt(tag["$"]["oc:id"])
+                                    }
+                                    tags.push(tagObject);
+                                });
+                            };
+                        }
+                        
+
                         let file: FileCardType = {
                             fileName: path.substring(path.lastIndexOf("/") + 1),
                             fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
                             fileID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:fileid"][0]),
                             fileURL: path,
-                            lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0]
+                            lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0],
+                            fileTags: tags
                         };
                         fileList.files.push(file);
                     }
@@ -103,7 +120,8 @@ export const searchLatestFiles = async (): Promise<FileCardType[] | void> => {
                         fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
                         fileID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:fileid"][0]),
                         fileURL: element["d:href"][0],
-                        lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0]
+                        lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0],
+                        fileTags: []
                     };
                     fileList.push(file);
                 });
@@ -145,7 +163,8 @@ export const searchFilesByKeyword = async (keyword: String): Promise<FileCardTyp
                             fileType: element["d:propstat"][0]["d:prop"][0]["d:getcontenttype"][0],
                             fileID: parseInt(element["d:propstat"][0]["d:prop"][0]["oc:fileid"][0]),
                             fileURL: element["d:href"][0],
-                            lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0]
+                            lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0],
+                            fileTags: []
                         };
                         fileList.push(file);
                     });
@@ -318,7 +337,7 @@ export const getAllSystemTags = async (): Promise<FileTagType[] | void> => {
 
     let tags: FileTagType[] = [];
     try {
-        const response = await fetch(machineURL + "/remote.php/dav/systemtags/", requestOptions);
+        const response = await fetch(machineURL + "/remote.php/dav/systemtags/", requestOptions as RequestInit);
         const result = await response.text();
         parseString(result, function (err: any, result: any) {
             result["d:multistatus"]["d:response"].forEach((element: any) => {

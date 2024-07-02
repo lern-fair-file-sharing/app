@@ -9,7 +9,7 @@ export interface FileCardType {
     fileURL: string,
     fileID: number,
     lastModified: string,
-    fileTags?: FileTagType[]
+    fileTags: FileTagType[]
 }
 
 export interface FileListType {
