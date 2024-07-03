@@ -6,7 +6,7 @@ import Constants from "expo-constants";
 import * as Sharing from "expo-sharing";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 var parseString = require("react-native-xml2js").parseString;
-import { ExampleTags } from "./Example-Tags";
+import { exampleTags } from "./ExampleTags";
 
 
 
@@ -332,7 +332,7 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
                         }
 
                         // Assign tags based on directory path
-                        ExampleTags['Subjects'].forEach((tag) => {
+                        exampleTags['Subjects'].forEach((tag) => {
                             if (directory_path.includes(tag)) {
                                 tags.forEach(async (systemTag: any) => {
                                     if (systemTag.tagName === tag) {
