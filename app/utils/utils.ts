@@ -1,7 +1,6 @@
 import * as DocumentPicker from "expo-document-picker";
 import { DocumentPickerAsset, DocumentPickerResult } from "expo-document-picker";
 
-
 export enum LastModified {
     LAST_THREE_HOURS,
     TODAY,
@@ -9,9 +8,7 @@ export enum LastModified {
     OLDER
 }
 
-
 export const PERSONAL_SPACE_FOLDER_NAME = "Persönliche Ablage";
-
 
 export function getTimeFrame(dateTimeString: string): LastModified {
     try {
@@ -44,8 +41,7 @@ export function getTimeFrame(dateTimeString: string): LastModified {
     }
 }
 
-
-export async function pickFileFromDevice(): Promise<{blob: Blob, fileName: string} | void> {
+export async function pickFileFromDevice(): Promise<{ blob: Blob, fileName: string } | void> {
     try {
         let result: DocumentPickerResult = await DocumentPicker.getDocumentAsync({});
         if (result?.assets) {
@@ -68,21 +64,28 @@ export async function pickFileFromDevice(): Promise<{blob: Blob, fileName: strin
                     throw error;
                 });
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Error picking document:", error);
     }
 }
 
-
 export const getCurrentDateTimeString = () => {
     const now = new Date();
-  
+
     const hours = String(now.getHours()).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const year = String(now.getFullYear()).slice(-2);
-  
+
     return `${hours}:${minutes}T${day}-${month}-${year}`;
-  };
+};
+
+export function hashString(input: string) {
+    var hash = 0, len = input.length;
+    for (var i = 0; i < len; i++) {
+        hash = ((hash << 5) - hash) + input.charCodeAt(i);
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}

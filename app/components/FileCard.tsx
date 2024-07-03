@@ -10,6 +10,7 @@ import { FileCardType } from "../types/FileTypes";
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from "expo-intent-launcher";
 import WebView from "react-native-webview";
+import { hashString } from "../utils/utils";
 
 const pdfPreviewImage = require("../../assets/pdf-icon.png");
 const noPreviewImage = require("../../assets/basic-file-icon.png");
@@ -54,7 +55,10 @@ const FileCard = (props: FileCardProps) => {
     const fetchImage = async () => {
         const cacheDirectory = FileSystem.cacheDirectory + "images/";
         const fileName = props.fileURL.split("/").pop();
-        const fileUri = cacheDirectory + fileName;
+        if (!fileName) {
+            return;
+        }
+        const fileUri = cacheDirectory + hashString(fileName);
 
         try {
             const dirInfo = await FileSystem.getInfoAsync(cacheDirectory);
