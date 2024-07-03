@@ -51,6 +51,7 @@ const FileSearchBar: React.FunctionComponent<SearchBarProps> = (props: SearchBar
 
 const styles = StyleSheet.create({
     searchContainer: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         padding: 0,

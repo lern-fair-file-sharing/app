@@ -6,11 +6,12 @@ import { AntDesign } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import Colors from "../utils/Colors";
 import { fetchFile, downloadFile, deleteItem } from "../utils/ServerRequests";
-import { FileCardType } from "../types/FileTypes";
+import { FileCardType, FileTagType } from "../types/FileTypes";
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from "expo-intent-launcher";
 import WebView from "react-native-webview";
 import { hashString } from "../utils/utils";
+import TagBadge from "./TagBadge";
 
 const pdfPreviewImage = require("../../assets/pdf-icon.png");
 const noPreviewImage = require("../../assets/basic-file-icon.png");
@@ -26,6 +27,8 @@ const FileCard = (props: FileCardProps) => {
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(false);
     const [pdfBase64, setPdfBase64] = useState<string | null>(null);
     const [webViewUri, setWebViewUri] = useState('');
+
+    const FILE_BASE_URL = `/remote.php/dav/files/${process.env.EXPO_PUBLIC_USER}/`;
 
     useEffect(() => {
         if (props.fileType === "application/pdf") {
@@ -148,6 +151,13 @@ const FileCard = (props: FileCardProps) => {
         }
     };
 
+
+    const getFileFolderPath = (): string => {
+        let filePath = decodeURI(props.fileURL.replace(FILE_BASE_URL, "")).split("/");
+        filePath.pop();
+        return filePath.join("/");
+    }
+
     return (
         <TouchableOpacity style={styles.container} onPress={displayFile}>
             <Image
@@ -157,7 +167,21 @@ const FileCard = (props: FileCardProps) => {
             />
             <View style={styles.fileInfos}>
                 <Text style={styles.fileName}>{decodeURIComponent(props.fileName)}</Text>
-                <View style={styles.tagPlaceHolder} />
+                <View style={styles.tagContainer}>
+                    {
+                        props.fileTags && props.fileTags.length > 0 ?
+                            props.fileTags.map((tag: FileTagType, idx: number) => {
+                                return <TagBadge key={idx} name={tag.tagName} color={"green"} />
+                            })
+                        :
+                            <Text
+                                style={styles.filePath}
+                                numberOfLines={1}
+                            >
+                                {getFileFolderPath()}
+                            </Text>
+                    }
+                </View>
             </View>
 
             <Popover
@@ -257,12 +281,17 @@ const styles = StyleSheet.create({
     fileInfos: {
         flex: 6,
         display: "flex",
-        gap: 5,
     },
-    tagPlaceHolder: {
+    tagContainer: {
         flex: 1,
-        backgroundColor: "#dfdfdf",
-        height: 20,
+        display: "flex",
+        flexDirection: "row",
+        gap: 5,
+        overflow: "hidden",
+    },
+    filePath: {
+        color: Colors.secondary,
+        fontSize: 13,
     },
     fileName: {
         flex: 1,
