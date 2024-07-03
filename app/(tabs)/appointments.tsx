@@ -138,7 +138,7 @@ const appointments: Appointment[] = [
     },
 ];
 
-const CalendarPage: React.FC = () => {
+const AppointmentPage: React.FC = () => {
     const groupedAppointments = appointments.reduce((acc: { [key: string]: Appointment[] }, appointment) => {
         acc[appointment.date] = acc[appointment.date] ? [...acc[appointment.date], appointment] : [appointment];
         return acc;
@@ -181,4 +181,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CalendarPage;
+export default AppointmentPage;

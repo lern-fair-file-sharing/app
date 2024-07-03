@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
 
       },
       extraParticipants: {
-        backgroundColor: Colors.surface,
+        backgroundColor: Colors.background,
         borderRadius: 12,
         width: 24,
         height: 24,
