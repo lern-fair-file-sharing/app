@@ -313,7 +313,7 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
         redirect: "follow"
     };
 
-    fetch(machineURL + location, requestOptions as RequestInit)
+    return fetch(machineURL + location, requestOptions as RequestInit)
         .then((response) => {return response.text()})
         .then(async (result) => { 
             let fileID: number
@@ -328,10 +328,18 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
                                 }
                             });
                         }
-                    });
+                        else {
+                            console.error("No tags found in system");
+                            return false;
+                        }
+                    }).catch((error) => { console.error(error); return false; });
 
                 }
-            });
+                else {
+                    console.error("Error finding file");
+                    return false;
+                }
+            }).catch((error) => { console.error(error); return false; });
             
 
             return true })
