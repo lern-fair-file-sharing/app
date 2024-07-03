@@ -165,6 +165,7 @@ const AppointmentPage: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: 30,
         backgroundColor: Colors.background,
     },
     calendar: {
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
     monthDivider: {
         height: 2,
         backgroundColor: Colors.yellow,
+        marginVertical:10,
     },
 });
 
