@@ -6,6 +6,8 @@ import Constants from "expo-constants";
 import * as Sharing from "expo-sharing";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 var parseString = require("react-native-xml2js").parseString;
+import { ExampleTags } from "./Example-Tags";
+
 
 
 const host = Constants?.expoConfig?.hostUri
@@ -62,7 +64,7 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
 
                         let tags: FileTagType[] = [];
                         if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"].length !== 0) {
-                           if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"] !== undefined) {
+                            if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"] !== undefined) {
                                 element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"].forEach((tag: any) => {
                                     let tagObject: FileTagType = {
                                         tagName: tag["_"],
@@ -71,8 +73,8 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
                                     tags.push(tagObject);
                                 });
                             };
-                          }
-                        
+                        }
+
 
                         let file: FileCardType = {
                             fileName: path.substring(path.lastIndexOf("/") + 1),
@@ -314,23 +316,83 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
     };
 
     return fetch(machineURL + location, requestOptions as RequestInit)
-        .then((response) => {return response.text()})
-        .then(async (result) => { 
+        .then((response) => { return response.text() })
+        .then(async (result) => {
             let fileID: number
-            await getFolderContent(location).then( async (response: void | FileListType) => {
+            await getFolderContent(location).then(async (response: void | FileListType) => {
                 if (response) {
                     fileID = response.files[response.files.length - 1].fileID;
                     let tags = await getAllSystemTags().then((tags: void | FileTagType[]) => {
-                        if (tags) {
-                            tags.forEach(async (tag: FileTagType) => {
-                                if (tag.tagName === "Uploaded") {
-                                    await assignSystemTag(fileID, tag);
+                        let file_name = response.files[response.files.length - 1].fileName.toLowerCase();
+                        let directory_path = location; // assuming directory_path is same as location
+
+                        if (!tags) {
+                            console.error("No tags found in system");
+                            return false;
+                        }
+
+                        // Assign tags based on directory path
+                        ExampleTags['Subjects'].forEach((tag) => {
+                            if (directory_path.includes(tag)) {
+                                tags.forEach(async (systemTag: any) => {
+                                    if (systemTag.tagName === tag) {
+                                        if (!(await assignSystemTag(fileID, systemTag))) {
+                                            console.error("Failed to assign tag in Subject.");
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        
+                        // Assign user tag to all uploaded files
+                        tags.forEach(async (systemTag) => {
+                            if (systemTag.tagName === user) {
+                                if (!(await assignSystemTag(fileID, systemTag))) {
+                                    console.error("Failed to assign User Tag.");
+                                }
+                            }
+                        });
+                        
+
+                        // Check for document file types
+                        if (file_name.endsWith(".pdf") || file_name.endsWith(".md") || file_name.endsWith(".docx") || file_name.endsWith(".txt") || file_name.endsWith(".odf")) {
+                            tags.forEach(async (systemTag) => {
+                                if (systemTag.tagName === "Dokument") {
+                                    if (!(await assignSystemTag(fileID, systemTag))) {
+                                        console.error("Failed to assign Document tag.");
+                                    }
                                 }
                             });
                         }
-                        else {
-                            console.error("No tags found in system");
-                            return false;
+                        // Check for image file types
+                        else if (file_name.endsWith(".jpg") || file_name.endsWith(".jpeg") || file_name.endsWith(".png") || file_name.endsWith(".gif")) {
+                            tags.forEach(async (systemTag) => {
+                                if (systemTag.tagName === "Bild") {
+                                    if (!(await assignSystemTag(fileID, systemTag))) {
+                                        console.error("Failed to assign Picture tag.");
+                                    }
+                                }
+                            });
+                        }
+                        // Check for video file types
+                        else if (file_name.endsWith(".mp4") || file_name.endsWith(".mov") || file_name.endsWith(".avi")) {
+                            tags.forEach(async (systemTag) => {
+                                if (systemTag.tagName === "Video") {
+                                    if (!(await assignSystemTag(fileID, systemTag))) {
+                                        console.error("Failed to assign Video tag.");
+                                    }
+                                }
+                            });
+                        }
+                        // Check for audio file types
+                        else if (file_name.endsWith(".mp3") || file_name.endsWith(".wav") || file_name.endsWith(".flac")) {
+                            tags.forEach(async (systemTag) => {
+                                if (systemTag.tagName === "Audio") {
+                                    if (!(await assignSystemTag(fileID, systemTag))) {
+                                        console.error("Failed to assign audio tag.");
+                                    }
+                                }
+                            });
                         }
                     }).catch((error) => { console.error(error); return false; });
 
@@ -340,12 +402,13 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
                     return false;
                 }
             }).catch((error) => { console.error(error); return false; });
-            
 
-            return true })
+
+            return true
+        })
         .catch((error) => {
             console.error(error); return false
-    });
+        });
 }
 
 
@@ -389,7 +452,7 @@ export const getAllFilesOfSystemTag = async (tagID: number): Promise<FileCardTyp
     requestHeaders.append("Content-Type", "text/plain");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);
 
-    const raw = "<?xml version=\"1.0\"?>\r\n<oc:filter-files xmlns:d=\"DAV:\" xmlns:nc=\"http://nextcloud.org/ns\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:ocs=\"http://open-collaboration-services.org/ns\">\r\n	<d:prop>\r\n        <oc:fileid />\r\n        <d:displayname/>\r\n        <d:getcontenttype/>\r\n        <d:getetag/>\r\n        <oc:size />\r\n        <oc:tags />\r\n        <d:getlastmodified/>\r\n        <d:resourcetype/>\r\n        <nc:system-tags />\r\n	</d:prop>\r\n    <oc:filter-rules>\r\n        <oc:systemtag>"+tagID.toString()+"</oc:systemtag>\r\n    </oc:filter-rules>\r\n</oc:filter-files>";
+    const raw = "<?xml version=\"1.0\"?>\r\n<oc:filter-files xmlns:d=\"DAV:\" xmlns:nc=\"http://nextcloud.org/ns\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:ocs=\"http://open-collaboration-services.org/ns\">\r\n	<d:prop>\r\n        <oc:fileid />\r\n        <d:displayname/>\r\n        <d:getcontenttype/>\r\n        <d:getetag/>\r\n        <oc:size />\r\n        <oc:tags />\r\n        <d:getlastmodified/>\r\n        <d:resourcetype/>\r\n        <nc:system-tags />\r\n	</d:prop>\r\n    <oc:filter-rules>\r\n        <oc:systemtag>" + tagID.toString() + "</oc:systemtag>\r\n    </oc:filter-rules>\r\n</oc:filter-files>";
 
     const requestOptions = {
         method: "REPORT",
@@ -400,7 +463,7 @@ export const getAllFilesOfSystemTag = async (tagID: number): Promise<FileCardTyp
 
     let fileList: FileCardType[] = [];
 
-    return fetch(machineURL + "/remote.php/dav"+ userpath, requestOptions as RequestInit)
+    return fetch(machineURL + "/remote.php/dav" + userpath, requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => {
             if (result === undefined) {
@@ -430,7 +493,7 @@ export const getAllFilesOfSystemTag = async (tagID: number): Promise<FileCardTyp
                             lastModified: element["d:propstat"][0]["d:prop"][0]["d:getlastmodified"][0],
                             fileTags: tags
                         };
-                        
+
                         fileList.push(file);
                     });
                 });
@@ -486,7 +549,7 @@ export const assignSystemTag = async (fileID: number, tag: FileTagType): Promise
         redirect: "follow"
     };
 
-    fetch(machineURL + "/remote.php/dav/systemtags-relations/files/" + fileID + "/" + tag.tagID.toString(), requestOptions as RequestInit)
+    return fetch(machineURL + "/remote.php/dav/systemtags-relations/files/" + fileID + "/" + tag.tagID.toString(), requestOptions as RequestInit)
         .then((response) => response.text())
         .then((result) => { return true })
         .catch((error) => { console.error(error); return false });
