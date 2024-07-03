@@ -328,10 +328,10 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
                         }
 
                         // Assign tags based on directory path
-                        subjectTags.forEach((tag: string) => {
+                        subjectTags.forEach((tag) => {
                             if (directory_path.includes(tag)) {
                                 tags.forEach(async (systemTag: any) => {
-                                    if (directory_path.includes(tag)) {
+                                    if (systemTag.tagName === tag) {
                                         if (!(await assignSystemTag(fileID, systemTag))) {
                                             console.error("Failed to assign tag in Subject.");
                                         }
