@@ -39,6 +39,25 @@ export interface PropSearchResponseType {
                     "oc:tags": string,
                     "d:getlastmodified": string,
                     "d:resourcetype": string,
+                    "nc:system-tags"?: any,
+                },
+                "d:status": string
+            }
+        }
+    }[]
+}
+
+export interface TagsResponseType {
+    "d:multistatus": {
+        "d:response": {
+            "d:href": string,
+            "d:propstat": {
+                "d:prop": {
+                    "oc:id": string,
+                    "oc:displayname": string,
+                    "oc:user-visible": boolean,
+                    "oc:user-assignable": boolean,
+                    "oc:can-assign": boolean,
                 },
                 "d:status": string
             }
