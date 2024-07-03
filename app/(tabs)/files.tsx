@@ -189,8 +189,8 @@ const FilesTabScreen = () => {
                         <ScrollView style={styles.tagSelectModal}>
                             <Text style={styles.tagSelectInstruction}>Tag auswählen:</Text>
                             {
-                                allSystemTags.map((tag: FileTagType) => 
-                                    <TouchableOpacity style={styles.tagSelectButton} onPress={async () => {
+                                allSystemTags.map((tag: FileTagType, index: number) => 
+                                    <TouchableOpacity key={index} style={styles.tagSelectButton} onPress={async () => {
                                         const filesByTag = await getAllFilesBySystemTag(tag.tagID);
                                         if (!filesByTag || filesByTag.length === 0) {
                                             Alert.alert("Tag nicht gefunden!", `Es existieren keine Dateien mit dem Tag "${tag.tagName}".`);

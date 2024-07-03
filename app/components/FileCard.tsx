@@ -57,11 +57,15 @@ const FileCard = (props: FileCardProps) => {
 
     const fetchImage = async () => {
         const cacheDirectory = FileSystem.cacheDirectory + "images/";
-        const fileName = props.fileURL.split("/").pop();
+        let fileName = props.fileURL.split("/").pop();
         if (!fileName) {
             return;
         }
-        const fileUri = cacheDirectory + hashString(fileName);
+
+        if (Platform.OS === "android") [
+            fileName = hashString(fileName).toString()
+        ]
+        const fileUri = cacheDirectory + fileName;
 
         try {
             const dirInfo = await FileSystem.getInfoAsync(cacheDirectory);
