@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, ScrollView, FlatList } from "react-native";
-import ConfirmationCard from "../components/confirmationCard";
-import AppointmentCard from "../components/appointmentCard";
+import { View, Text, StyleSheet, ScrollView, FlatList, SafeAreaView } from "react-native";
+import ConfirmationCard from "../components/ConfirmationCard";
+import AppointmentCard from "../components/AppointmentCard";
 import Colors from "../utils/Colors";
 
 const name = "Stephan";
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     greeting: {
         backgroundColor: Colors.primary,
         padding: 24,
-        paddingTop: 60,
+        paddingTop: 75,
         marginBottom: 24,
     },
     greetingText: {

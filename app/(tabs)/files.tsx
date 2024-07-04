@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { StyleSheet, View, Text, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View, Text, ScrollView, RefreshControl, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign } from "@expo/vector-icons";
 import FileList from "../components/FileList";
@@ -19,9 +19,11 @@ import Popover from "react-native-popover-view";
 
 const FilesTabScreen = () => {
     const [fileView, setFileView] = useState<FileView>(FileView.Activity);
+    const [latestFileView, setLatestFileView] = useState<FileView>(FileView.Activity);
     const [allFolders, setAllFolders] = useState<FolderCardType[]>( [] as FolderCardType[]);
     const [allFiles, setAllFiles] = useState<FileCardType[]>( [] as FileCardType[]);
     const [latestFiles, setLatestFiles] = useState<FileCardType[]>( [] as FileCardType[]);
+    const [searchBarActive, setSearchBarActive] = useState<boolean>(false);
     const [searchResult, setSearchResult] = useState<FileCardType[]>([] as FileCardType[]);
     const [tagSelectPopupVisible, setTagSelectPopupVisible] = useState<boolean>(false);
     const [allSystemTags, setAllSystemTags] = useState<FileTagType[]>([]);
@@ -125,7 +127,7 @@ const FilesTabScreen = () => {
         const thisWeekFiles = categorizedFiles.thisWeek;
 
         if (lastThreeHoursFiles.length === 0 && todayFiles.length === 0 && thisWeekFiles.length === 0) {
-            return <Text style={styles.fileActivityTime}>No recent activity!</Text>
+            return <Text style={styles.fileActivityTime}>Keine neuen Dateien!</Text>
         }
 
         return (
@@ -169,7 +171,13 @@ const FilesTabScreen = () => {
 
                 <View style={styles.searchContainer}>
                     <FileSearchBar
-                        callback={() => setFileViewHandler(FileView.Search)}
+                        callback={() => {
+                            setFileViewHandler(FileView.Search)
+                            // Rember previous file view so we can return to if when user abort search
+                            if (fileView !== FileView.Search) {
+                                setLatestFileView(fileView);
+                            }
+                        }}
                         setSearchResultHandler={setSearchResultHandler}
                     />
                     <Popover
@@ -180,7 +188,7 @@ const FilesTabScreen = () => {
                         }}
                         from={(
                             <TouchableOpacity style={styles.tagFilterButton} onPress={async () => {
-                                const allTags = getAllSystemTags();
+                                setSearchBarActive(false);
                                 setTagSelectPopupVisible(true)
                             }}>
                                 <AntDesign name="tago" size={24} color="white" />
@@ -223,8 +231,16 @@ const FilesTabScreen = () => {
                         (
                             <ScrollView refreshControl={ <RefreshControl refreshing={false} onRefresh={onRefresh} /> } >
                                 {
-                                    fileView === FileView.Search ?
+                                    fileView === FileView.Search && searchResult.length > 0 ?
                                         <FileList folders={[]} files={searchResult} />
+                                    : fileView === FileView.Search && searchResult.length === 0 ?
+                                        <View style={styles.emptySearchBox}>
+                                            <Text style={styles.noFilesText}>Wow so leer!</Text>
+                                            <TouchableOpacity style={styles.abortSearchButton} onPress={() => setFileView(latestFileView) }>
+                                                <FontAwesome name="long-arrow-left" size={15} color="white" />
+                                                <Text style={styles.abortSearchText}>zurück</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     :
                                         <FileList folders={allFolders} files={allFiles} refreshFunction={fetchAllData} />
                                 }
@@ -261,7 +277,7 @@ const FilesPage = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 30,
+        paddingTop: 40,
         backgroundColor: "#fff",
     },
     content: {
@@ -331,6 +347,36 @@ const styles = StyleSheet.create({
         color: Colors.primary,
         fontSize: 17
     },
+    emptySearchBox: {
+        width: "100%",
+        marginTop: "50%",
+        gap: 10,
+        display: "flex",
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    noFilesText: {
+        color: Colors.secondary,
+        textAlign: "center",
+        fontSize: 15,
+    },
+    abortSearchButton: {
+        borderRadius: 8,
+        paddingVertical: 7,
+        paddingHorizontal: 10,
+        backgroundColor: Colors.secondary,
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "row",
+        gap: 10
+    },
+    abortSearchText: {
+        color: "white",
+        fontSize: 15,
+        lineHeight: 17,
+        textAlign: "center",
+    }
 });
 
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, Alert, Text } from 'react-native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Colors from '../utils/Colors';
-import ClassCard from '../components/classCard';
+import ClassCard from '../components/ClassCard';
 import { getFolderContent } from '../utils/ServerRequests';
 import { FolderCardType } from "../types/FileTypes";
 import { PERSONAL_SPACE_FOLDER_NAME } from "../utils/utils";
@@ -101,7 +101,7 @@ const ClassesPage = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 30,
+        paddingTop: 40,
         backgroundColor: Colors.background,
     },
     list: {

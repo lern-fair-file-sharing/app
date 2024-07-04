@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Colors from '../utils/Colors';
 
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
         color: "rgba(0, 0, 0, 0.75)",
         fontWeight: "bold",
         fontSize: 13,
+        marginTop: Platform.OS === "ios" ? 2 : 0
     }
 });
 
