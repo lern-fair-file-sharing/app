@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, ScrollView, StyleSheet } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import DateSection from '../components/dateSection';
 import AddButton from '../components/addAppointmentButton';
 import Colors from '../utils/Colors';
@@ -138,6 +138,12 @@ const appointments: Appointment[] = [
     },
 ];
 
+const calenderAddIcon = require('../../assets/calendar_add.png');
+
+interface AddButtonProps {
+    onPress: () => void;
+}
+
 const AppointmentPage: React.FC = () => {
     const groupedAppointments = appointments.reduce((acc: { [key: string]: Appointment[] }, appointment) => {
         acc[appointment.date] = acc[appointment.date] ? [...acc[appointment.date], appointment] : [appointment];
@@ -157,7 +163,13 @@ const AppointmentPage: React.FC = () => {
                 </View>
             </ScrollView>
 
-            <AddButton onPress={() => console.log('Add new appointment')} />
+            <TouchableOpacity style={styles.button} onPress={() => console.log('Add new appointment')}>
+            <Image 
+                source={calenderAddIcon}
+                style={{ width: 25, height: 25 }}
+                resizeMode='contain'
+            />
+        </TouchableOpacity>
         </View>
     );
 };
@@ -180,6 +192,14 @@ const styles = StyleSheet.create({
         height: 2,
         backgroundColor: Colors.yellow,
         marginVertical:10,
+    },
+    button: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: Colors.primary,
+        padding: 15,
+        borderRadius: 10,
     },
 });
 
