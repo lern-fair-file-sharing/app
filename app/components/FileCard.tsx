@@ -306,6 +306,7 @@ const styles = StyleSheet.create({
     fileName: {
         flex: 1,
         fontSize: 15,
+        marginTop: Platform.OS === "ios" ? 3 : 0,
         color: Colors.primary,
     },
     openSettingsButton: {
