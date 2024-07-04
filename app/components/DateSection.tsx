@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import AppointmentCard from './appointmentPageCard';
+import AppointmentCard from './AppointmentPageCard';
 import Colors from '../utils/Colors';
 
 

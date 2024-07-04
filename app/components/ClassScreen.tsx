@@ -317,6 +317,7 @@ const styles = StyleSheet.create({
     chatInputField: {
         flex: 1,
         textAlignVertical: "center",
+        marginTop: Platform.OS === "ios" ? 6 : 0,
         height: "100%",
         color: "black",
         paddingVertical: 10,

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, View, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import DateSection from '../components/dateSection';
+import { Text, View, Image, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import DateSection from '../components/DateSection';
 import Colors from '../utils/Colors';
 
 interface Participant {
@@ -172,7 +172,7 @@ const AppointmentPage: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 30,
+        paddingTop: 40,
         backgroundColor: Colors.background,
     },
     calendar: {

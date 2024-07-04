@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, Platform } from 'react-native';
 import { FileCardType } from "../types/FileTypes";
 import { searchFilesByKeyword } from '../utils/ServerRequests';
 import Colors from '../utils/Colors';
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     },
     searchInput: {
         flex: 1,
-        backgroundColor: "transparent",
         borderWidth: 0,
         height: 40,
         paddingLeft: 10,

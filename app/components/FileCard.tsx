@@ -26,7 +26,8 @@ const FileCard = (props: FileCardProps) => {
     const [settingsPopupVisible, setSettingsPopupVisible] = useState<boolean>(false);
     const [isPreviewVisible, setIsPreviewVisible] = useState<boolean>(false);
     const [pdfBase64, setPdfBase64] = useState<string | null>(null);
-    const [webViewUri, setWebViewUri] = useState('');
+    const [webViewUri, setWebViewUri] = useState<string>("");
+    const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
     const FILE_BASE_URL = `/remote.php/dav/files/${process.env.EXPO_PUBLIC_USER}/`;
 
@@ -111,6 +112,7 @@ const FileCard = (props: FileCardProps) => {
                 } else {
                     Alert.alert("File deleted!");
                 }
+                setIsDeleted(true);
                 props.cardRemovalHandler();
             })
             .catch(error => {
@@ -160,6 +162,10 @@ const FileCard = (props: FileCardProps) => {
         let filePath = decodeURI(props.fileURL.replace(FILE_BASE_URL, "")).split("/");
         filePath.pop();
         return filePath.join("/");
+    }
+
+    if (isDeleted) {
+        return null;
     }
 
     return (
