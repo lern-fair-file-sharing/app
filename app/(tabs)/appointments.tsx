@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, View, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import DateSection from '../components/dateSection';
-import AddButton from '../components/addAppointmentButton';
 import Colors from '../utils/Colors';
 
 interface Participant {
