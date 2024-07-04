@@ -139,10 +139,6 @@ const appointments: Appointment[] = [
 
 const calenderAddIcon = require('../../assets/calendar_add.png');
 
-interface AddButtonProps {
-    onPress: () => void;
-}
-
 const AppointmentPage: React.FC = () => {
     const groupedAppointments = appointments.reduce((acc: { [key: string]: Appointment[] }, appointment) => {
         acc[appointment.date] = acc[appointment.date] ? [...acc[appointment.date], appointment] : [appointment];
