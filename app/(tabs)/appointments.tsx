@@ -163,12 +163,12 @@ const AppointmentPage: React.FC = () => {
             </ScrollView>
 
             <TouchableOpacity style={styles.button} onPress={() => console.log('Add new appointment')}>
-            <Image 
-                source={calenderAddIcon}
-                style={{ width: 25, height: 25 }}
-                resizeMode='contain'
-            />
-        </TouchableOpacity>
+                <Image
+                    source={calenderAddIcon}
+                    style={{ width: 25, height: 25 }}
+                    resizeMode='contain'
+                />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     monthDivider: {
         height: 2,
         backgroundColor: Colors.yellow,
-        marginVertical:10,
+        marginVertical: 10,
     },
     button: {
         position: 'absolute',
