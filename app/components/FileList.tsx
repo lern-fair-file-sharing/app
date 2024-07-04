@@ -40,8 +40,9 @@ const FileList = (props: FileListType) => {
                     fileType={fileData.fileType}
                     fileURL={fileData.fileURL}
                     lastModified={fileData.lastModified}
-                    tags={fileData.tags}
+                    fileTags={fileData.fileTags}
                     cardRemovalHandler={cardRemovalHandler}
+                    fileID={fileData.fileID}
                 />
             ))}
         </View>

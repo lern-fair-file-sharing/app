@@ -6,8 +6,7 @@ import Constants from "expo-constants";
 import * as Sharing from "expo-sharing";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 var parseString = require("react-native-xml2js").parseString;
-import { exampleTags } from "./ExampleTags";
-
+import { subjectTags } from "./utils"; 
 
 
 const host = Constants?.expoConfig?.hostUri
@@ -60,8 +59,6 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
                         }
                     }
                     else {
-                        //console.log(element["d:propstat"][0]["d:prop"][0]);
-
                         let tags: FileTagType[] = [];
                         if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"].length !== 0) {
                             if (element["d:propstat"][0]["d:prop"][0]["nc:system-tags"][0]["nc:system-tag"] !== undefined) {
@@ -72,9 +69,8 @@ export const getFolderContent = async (directory: string): Promise<FileListType 
                                     }
                                     tags.push(tagObject);
                                 });
-                            };
+                            }
                         }
-
 
                         let file: FileCardType = {
                             fileName: path.substring(path.lastIndexOf("/") + 1),
@@ -332,7 +328,7 @@ export const uploadFile = async (file: Blob, location: string): Promise<boolean 
                         }
 
                         // Assign tags based on directory path
-                        exampleTags['Subjects'].forEach((tag) => {
+                        subjectTags.forEach((tag) => {
                             if (directory_path.includes(tag)) {
                                 tags.forEach(async (systemTag: any) => {
                                     if (systemTag.tagName === tag) {
@@ -447,7 +443,7 @@ export const getAllSystemTags = async (): Promise<FileTagType[] | void> => {
     return tags;
 }
 
-export const getAllFilesOfSystemTag = async (tagID: number): Promise<FileCardType[] | void> => {
+export const getAllFilesBySystemTag = async (tagID: number): Promise<FileCardType[] | void> => {
     const requestHeaders = new Headers();
     requestHeaders.append("Content-Type", "text/plain");
     requestHeaders.append("Authorization", `Basic ${process.env.EXPO_PUBLIC_TOKEN}`);

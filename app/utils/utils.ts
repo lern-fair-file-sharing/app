@@ -12,6 +12,7 @@ export enum LastModified {
 
 export const PERSONAL_SPACE_FOLDER_NAME = "Persönliche Ablage";
 
+export const subjectTags = [ "Mathe", "Deutsch", "Englisch", "Latein", "Physik", "Biologie", "Geschichte", "Erdkunde"];
 
 export function getTimeFrame(dateTimeString: string): LastModified {
     try {
